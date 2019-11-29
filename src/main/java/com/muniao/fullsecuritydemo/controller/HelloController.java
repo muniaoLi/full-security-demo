@@ -33,10 +33,16 @@ public class HelloController
         return "hello user";
     }
 
-    @RequestMapping("/open/hello")
-    public String openHello()
+    @RequestMapping("/oauthAdmin/hello")
+    public String oauthAdminHello()
     {
-        return "hello open";
+        return "hello oauth admin";
+    }
+
+    @RequestMapping("/oauthUser/hello")
+    public String oauthUserHello()
+    {
+        return "hello oauth user";
     }
 
     @Autowired

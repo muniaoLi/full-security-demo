@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.DisabledException;
@@ -85,7 +86,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                 })
                 .and()
                 .formLogin()
-                //.loginPage("/login_p")
+                .loginPage("/login_p")
                 .loginProcessingUrl("/login")
                 .usernameParameter("username").passwordParameter("password")
                 .failureHandler(new AuthenticationFailureHandler()
@@ -147,6 +148,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                     }
                 })
                 .permitAll()
+
+                .and()
+                .antMatcher("/oauth/**")
+                .authorizeRequests()
+                .antMatchers("/oauth/**").permitAll()
+
                 .and()
                 .logout()
                 .logoutUrl("/logout")
@@ -175,6 +182,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     public void configure(WebSecurity web) throws Exception
     {
         web.ignoring().antMatchers("/open/**", "/index.html", "/static/**", "/login_p", "/favicon.ico");
+    }
+
+    @Override
+    @Bean
+    protected AuthenticationManager authenticationManager() throws Exception
+    {
+        return super.authenticationManager();
     }
 
 }
