@@ -7,6 +7,8 @@ import com.muniao.fullsecuritydemo.util.LoginUserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -21,7 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -52,21 +53,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     {
         auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
-
-    /*@Override
-    protected void configure(HttpSecurity http) throws Exception
-    {
-        http.authorizeRequests()
-                .antMatchers("/admin/**").hasRole("admin")
-                .antMatchers("/dba/**").hasRole("dba")
-                .antMatchers("/user/**").hasRole("user")
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .loginProcessingUrl("/login").permitAll()
-                .and()
-                .csrf().disable();
-    }*/
 
     //拦截规则，表单登录、登录成功失败的响应
     @Override
@@ -175,6 +161,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     public void configure(WebSecurity web) throws Exception
     {
         web.ignoring().antMatchers("/open/**", "/index.html", "/static/**", "/login_p", "/favicon.ico");
+    }
+
+    @Bean
+    RoleHierarchy roleHierarchy()
+    {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        String hierarchy = "ROLE_dba > ROLE_admin \n ROLE_admin > ROLE_user";
+        roleHierarchy.setHierarchy(hierarchy);
+        return roleHierarchy;
     }
 
 }
